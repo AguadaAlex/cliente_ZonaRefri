@@ -25,6 +25,10 @@ public class Pedido {
     private Usuario usuario;
 
     private LocalDateTime fecha;
+
+    @Column(nullable = false)
     private BigDecimal total;
+
+    @Column(nullable = false)
     private String estado;
 }

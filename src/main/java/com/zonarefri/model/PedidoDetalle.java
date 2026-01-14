@@ -27,8 +27,9 @@ public class PedidoDetalle {
     @JoinColumn(name = "producto_id")
     private Producto producto;
 
+    @Column(nullable = false)
     private Integer cantidad;
 
-    @Column(name = "precio_unitario")
+    @Column(name = "precio_unitario", nullable = false)
     private BigDecimal precioUnitario;
 }

@@ -6,8 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.AccessLevel;
+import lombok.ToString;
 import java.time.LocalDateTime;
 
+/**
+ * Entidad que representa a los usuarios del sistema.
+ */
 @Entity
 @Table(name = "usuarios")
 @Data
@@ -26,10 +30,16 @@ public class Usuario {
     private String email;
 
     @Column(nullable = false, length = 255)
+    @ToString.Exclude
     private String password;
 
-    private String rol; 
+    private String rol;
 
-    @Column(name = "fecha_registro")
+    @Column(name = "fecha_registro", updatable = false)
     private LocalDateTime fechaRegistro;
+
+    @PrePersist
+    protected void onCreate() {
+        this.fechaRegistro = LocalDateTime.now();
+    }
 }

@@ -26,6 +26,8 @@ public class Pago {
     @Column(name = "mercado_pago_id")
     private String mercadoPagoId;
 
+    @Column(nullable = false)
     private String estado;
+
     private LocalDateTime fecha;
 }
