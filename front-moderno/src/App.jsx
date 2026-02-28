@@ -6,6 +6,9 @@ function App() {
   const [productos, setProductos] = useState([]);
   const [errorProductos, setErrorProductos] = useState(null);
 
+  // --- LÓGICA DE ROLES AGREGADA ---
+  const [usuario, setUsuario] = useState({ rol: 'CLIENTE' }); 
+
   useEffect(() => {
     // trae el listado del backend cuando se monta el componente
     fetch('http://localhost:8080/api/productos')
@@ -27,7 +30,16 @@ function App() {
       <header style={{ backgroundColor: '#ff9f43', padding: '20px 0' }}>
         <div className="container-fluid px-md-5">
           <div className="row align-items-center">
-            <div className="col-auto"><div style={{ width: '40px' }}></div></div>
+            {/* BOTÓN PARA PROBAR ROLES (Ubicado en el espacio vacío original) */}
+            <div className="col-auto">
+              <button 
+                className="btn btn-sm btn-dark opacity-50" 
+                onClick={() => setUsuario({ rol: usuario.rol === 'ADMIN' ? 'CLIENTE' : 'ADMIN' })}
+              >
+                {usuario.rol}
+              </button>
+            </div>
+            
             <div className="col">
               <div className="input-group shadow-sm" style={{ borderRadius: '15px', overflow: 'hidden', maxWidth: '750px', margin: '0 auto' }}>
                 <input type="text" className="form-control border-0 py-3 px-4" placeholder="¿Qué repuesto estás buscando hoy?" style={{ fontSize: '1.1rem' }} />
@@ -52,7 +64,17 @@ function App() {
         </div>
       </header>
 
-      {/* 2. CARRUSEL */}
+      {/* PANEL DE ADMIN DISCRETO (Solo se ve si el rol es ADMIN) */}
+      {usuario.rol === 'ADMIN' && (
+        <div className="container mt-3">
+          <div className="alert alert-info d-flex justify-content-between align-items-center shadow-sm" style={{borderRadius: '15px'}}>
+            <span><strong>Modo Administrador:</strong> Puedes gestionar el catálogo.</span>
+            <button className="btn btn-primary btn-sm"> + Agregar Producto</button>
+          </div>
+        </div>
+      )}
+
+      {/* 2. CARRUSEL (TAL CUAL TU DISEÑO) */}
       <section className="container-fluid px-md-5 my-4">
         <div id="carouselZonaRefri" className="carousel slide shadow-lg" data-bs-ride="carousel">
           
@@ -64,7 +86,6 @@ function App() {
 
           <div className="carousel-inner" style={{ borderRadius: '25px', overflow: 'hidden' }}>
             
-            {/* SLIDE 1: HELADERA */}
             <div className="carousel-item active">
               <div className="row align-items-center g-0" style={{ backgroundColor: '#003566', minHeight: '550px' }}>
                 <div className="col-md-6 p-5 text-white">
@@ -74,26 +95,15 @@ function App() {
                   <button className="btn btn-warning btn-lg px-5 mt-3 fw-bold shadow text-dark">Ver Catálogo</button>
                 </div>
                 <div className="col-md-6 text-center p-4">
-                  <img 
-                    src="http://localhost:8080/images/productos/HeladeraElectrolux_frente.png" 
-                    className="img-fluid" 
-                    style={{ maxHeight: '450px', filter: 'drop-shadow(5px 5px 15px rgba(0,0,0,0.3))' }} 
-                    alt="Heladera" 
-                  />
+                  <img src="http://localhost:8080/images/productos/HeladeraElectrolux_frente.png" className="img-fluid" style={{ maxHeight: '450px', filter: 'drop-shadow(5px 5px 15px rgba(0,0,0,0.3))' }} alt="Heladera" />
                 </div>
               </div>
             </div>
 
-            {/* SLIDE 2: FREEZER (AGRANDADO) */}
             <div className="carousel-item">
               <div className="row align-items-center g-0" style={{ backgroundColor: '#ff851b', minHeight: '550px' }}>
                 <div className="col-md-6 text-center p-4">
-                  <img 
-                    src="http://localhost:8080/images/productos/frezzerhorizontal_frente.png" 
-                    className="img-fluid" 
-                    style={{ maxHeight: '420px', filter: 'drop-shadow(5px 5px 15px rgba(0,0,0,0.3))' }} // Aumentado de 350px a 420px
-                    alt="Freezer" 
-                  />
+                  <img src="http://localhost:8080/images/productos/frezzerhorizontal_frente.png" className="img-fluid" style={{ maxHeight: '420px', filter: 'drop-shadow(5px 5px 15px rgba(0,0,0,0.3))' }} alt="Freezer" />
                 </div>
                 <div className="col-md-6 p-5 text-white text-end">
                   <h2 className="display-4 fw-bold">Freezers Gafa</h2>
@@ -103,17 +113,9 @@ function App() {
               </div>
             </div>
 
-            {/* SLIDE 3: VENTILADOR (CÓDIGO RESTAURADO) */}
             <div className="carousel-item">
-              <div className="position-relative" style={{ 
-                height: '550px', 
-                backgroundImage: `url("http://localhost:8080/images/ui/habitacion.jpg")`,
-                backgroundSize: '110%', 
-                backgroundPosition: 'bottom center',
-                overflow: 'hidden'
-              }}>
+              <div className="position-relative" style={{ height: '550px', backgroundImage: `url("http://localhost:8080/images/ui/habitacion.jpg")`, backgroundSize: '110%', backgroundPosition: 'bottom center', overflow: 'hidden' }}>
                 <div className="position-absolute w-100 h-100" style={{ background: 'linear-gradient(to left, rgba(0,0,0,0.5) 0%, transparent 70%)', zIndex: 1 }}></div>
-
                 <div className="container h-100">
                   <div className="row h-100 align-items-center justify-content-end">
                     <div className="col-md-5 p-5 text-end" style={{ zIndex: 3 }}>
@@ -124,80 +126,41 @@ function App() {
                     </div>
                   </div>
                 </div>
-
-                <div className="position-absolute" style={{ 
-                  bottom: '0px',      
-                  left: '10%',        
-                  zIndex: 2,
-                  width: '340px'      
-                }}>
-                  <img 
-                    src="http://localhost:8080/images/productos/VentiladorDePie_frente.png" 
-                    alt="Ventilador de Pie"
-                    style={{ 
-                      width: '100%',
-                      height: 'auto',
-                      maxHeight: '520px', 
-                      filter: 'drop-shadow(10px 15px 25px rgba(0,0,0,0.4))', 
-                      display: 'block',
-                      objectFit: 'contain'
-                    }} 
-                  />
-                  <div style={{ 
-                    width: '180px', 
-                    height: '14px', 
-                    backgroundColor: 'rgba(0,0,0,0.6)', 
-                    borderRadius: '50%', 
-                    margin: '0 auto',
-                    marginTop: '-25px',
-                    filter: 'blur(10px)',
-                    transform: 'scaleX(1.8)'
-                  }}></div>
+                <div className="position-absolute" style={{ bottom: '0px', left: '10%', zIndex: 2, width: '340px' }}>
+                  <img src="http://localhost:8080/images/productos/VentiladorDePie_frente.png" alt="Ventilador de Pie" style={{ width: '100%', height: 'auto', maxHeight: '520px', filter: 'drop-shadow(10px 15px 25px rgba(0,0,0,0.4))', display: 'block', objectFit: 'contain' }} />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* CONTROLES MANUALES */}
-          <button className="carousel-control-prev" type="button" data-bs-target="#carouselZonaRefri" data-bs-slide="prev">
-            <span className="carousel-control-prev-icon"></span>
-          </button>
-          <button className="carousel-control-next" type="button" data-bs-target="#carouselZonaRefri" data-bs-slide="next">
-            <span className="carousel-control-next-icon"></span>
-          </button>
-
+          <button className="carousel-control-prev" type="button" data-bs-target="#carouselZonaRefri" data-bs-slide="prev"><span className="carousel-control-prev-icon"></span></button>
+          <button className="carousel-control-next" type="button" data-bs-target="#carouselZonaRefri" data-bs-slide="next"><span className="carousel-control-next-icon"></span></button>
         </div>
       </section>
 
       {/* SECTION DE PRODUCTOS OBTENIDOS DEL BACKEND */}
       <section className="container my-5">
         <h2 className="mb-4 text-center" style={{ color: '#00509d' }}>Catálogo de Productos</h2>
-        {errorProductos && (
-          <div className="alert alert-danger" role="alert">
-            No se pudieron cargar los productos: {errorProductos}
-          </div>
-        )}
+        {errorProductos && <div className="alert alert-danger">No se pudieron cargar los productos: {errorProductos}</div>}
         <div className="row g-4">
-          {productos.length === 0 && !errorProductos && (
-            <div className="col-12 text-center text-muted">Cargando productos...</div>
-          )}
           {productos.map(p => (
             <div key={p.id} className="col-sm-6 col-md-4 col-lg-3">
               <div className="card h-100 shadow-sm">
-                <img
-                  src={
-                    p.imagenUrl && p.imagenUrl.startsWith('http')
-                      ? p.imagenUrl
-                      : `http://localhost:8080${p.imagenUrl}`
-                  }
-                  className="card-img-top"
-                  alt={p.nombre}
-                  style={{ objectFit: 'contain', height: '180px', padding: '10px' }}
-                />
+                <img src={p.imagenUrl && p.imagenUrl.startsWith('http') ? p.imagenUrl : `http://localhost:8080${p.imagenUrl}`} className="card-img-top" alt={p.nombre} style={{ objectFit: 'contain', height: '180px', padding: '10px' }} />
                 <div className="card-body d-flex flex-column">
                   <h5 className="card-title" style={{ fontSize: '1.1rem' }}>{p.nombre}</h5>
                   <p className="card-text text-truncate" style={{ flex: '1' }}>{p.descripcion}</p>
-                  <div className="mt-2 fw-bold" style={{ color: '#007bff' }}>${p.precio}</div>
+                  
+                  {/* DIFERENCIACIÓN DE ROL EN LA TARJETA */}
+                  <div className="d-flex justify-content-between align-items-center mt-2">
+                    <div className="fw-bold" style={{ color: '#007bff' }}>${p.precio}</div>
+                    {usuario.rol === 'ADMIN' ? (
+                      <button className="btn btn-outline-danger btn-sm">Eliminar</button>
+                    ) : (
+                      <button className="btn btn-primary btn-sm">Comprar</button>
+                    )}
+                  </div>
+
                 </div>
               </div>
             </div>
@@ -205,7 +168,7 @@ function App() {
         </div>
       </section>
 
-      {/* 3. SECCIÓN PRINCIPAL */}
+      {/* 3. SECCIÓN PRINCIPAL (ROBOT) */}
       <main className="container-fluid p-0">
         <div className="row g-0">
           <div className="col-lg-6 p-5 d-flex flex-column justify-content-center bg-white" style={{ minHeight: '80vh' }}>
@@ -226,4 +189,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
