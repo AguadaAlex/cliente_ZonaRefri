@@ -9,7 +9,7 @@ import java.util.List;
  * Repositorio para la entidad Producto.
  */
 @Repository
-public interface ProductoRepository extends JpaRepository<Producto, Integer> {
-    // Permite filtrar por categoría en el frontend [cite: 20]
+public interface ProductoRepository extends JpaRepository<Producto, Long> {
+    // Permite filtrar por categoría en el frontend
     List<Producto> findByCategoria(String categoria);
 }
