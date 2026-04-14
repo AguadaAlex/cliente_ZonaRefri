@@ -23,4 +23,8 @@ public class ProductoController {
     public List<Producto> obtenerPorCategoria(@PathVariable String nombre) {
         return productoService.buscarPorCategoria(nombre);
     }
+    @PostMapping
+    public Producto crearProducto(@RequestBody Producto producto) {
+        return productoService.guardar(producto);
+    }
 }

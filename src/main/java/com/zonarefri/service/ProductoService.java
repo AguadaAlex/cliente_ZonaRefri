@@ -18,4 +18,7 @@ public class ProductoService {
     public List<Producto> buscarPorCategoria(String categoria) {
         return productoRepository.findByCategoria(categoria);
     }
+    public Producto guardar(Producto producto) {
+        return productoRepository.save(producto);
+    }
 }

@@ -12,4 +12,5 @@ import java.util.List;
 public interface ProductoRepository extends JpaRepository<Producto, Integer> {
     // Permite filtrar por categoría en el frontend [cite: 20]
     List<Producto> findByCategoria(String categoria);
+
 }
