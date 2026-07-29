@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import logoRobot from './assets/logo-refri.jpeg'
 import Registro from './components/Registro' 
+import FormularioProducto from './components/FormularioProducto' // Importado
 
 function App() {
   const [productos, setProductos] = useState([]);
   const [errorProductos, setErrorProductos] = useState(null);
-
-  // --- LÓGICA DE ROLES AGREGADA ---
   const [usuario, setUsuario] = useState({ rol: 'CLIENTE' }); 
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
   useEffect(() => {
-    // trae el listado del backend cuando se monta el componente
     fetch('http://localhost:8080/api/productos')
       .then(resp => {
         if (!resp.ok) throw new Error('Error al obtener productos');
@@ -30,7 +29,6 @@ function App() {
       <header style={{ backgroundColor: '#ff9f43', padding: '20px 0' }}>
         <div className="container-fluid px-md-5">
           <div className="row align-items-center">
-            {/* BOTÓN PARA PROBAR ROLES (Ubicado en el espacio vacío original) */}
             <div className="col-auto">
               <button 
                 className="btn btn-sm btn-dark opacity-50" 
@@ -64,28 +62,33 @@ function App() {
         </div>
       </header>
 
-      {/* PANEL DE ADMIN DISCRETO (Solo se ve si el rol es ADMIN) */}
+      {/* PANEL DE ADMIN */}
       {usuario.rol === 'ADMIN' && (
         <div className="container mt-3">
           <div className="alert alert-info d-flex justify-content-between align-items-center shadow-sm" style={{borderRadius: '15px'}}>
-            <span><strong>Modo Administrador:</strong> Puedes gestionar el catálogo.</span>
-            <button className="btn btn-primary btn-sm"> + Agregar Producto</button>
+            <span><strong>Modo Administrador:</strong> Gestionando catálogo.</span>
+            <button className="btn btn-primary btn-sm" onClick={() => setMostrarFormulario(!mostrarFormulario)}>
+              {mostrarFormulario ? 'Ocultar Formulario' : '+ Agregar Producto'}
+            </button>
           </div>
+          {mostrarFormulario && (
+            <div className="card p-4 mb-4 shadow-sm" style={{borderRadius: '15px', backgroundColor: '#f8f9fa'}}>
+              <h4 style={{color: '#00509d'}} className="mb-3">Cargar Nuevo Producto a Zona Refri</h4>
+              <FormularioProducto onClose={() => setMostrarFormulario(false)} />
+            </div>
+          )}
         </div>
       )}
 
-      {/* 2. CARRUSEL (TAL CUAL TU DISEÑO) */}
+      {/* 2. CARRUSEL */}
       <section className="container-fluid px-md-5 my-4">
         <div id="carouselZonaRefri" className="carousel slide shadow-lg" data-bs-ride="carousel">
-          
           <div className="carousel-indicators">
             <button type="button" data-bs-target="#carouselZonaRefri" data-bs-slide-to="0" className="active"></button>
             <button type="button" data-bs-target="#carouselZonaRefri" data-bs-slide-to="1"></button>
             <button type="button" data-bs-target="#carouselZonaRefri" data-bs-slide-to="2"></button>
           </div>
-
           <div className="carousel-inner" style={{ borderRadius: '25px', overflow: 'hidden' }}>
-            
             <div className="carousel-item active">
               <div className="row align-items-center g-0" style={{ backgroundColor: '#003566', minHeight: '550px' }}>
                 <div className="col-md-6 p-5 text-white">
@@ -99,7 +102,6 @@ function App() {
                 </div>
               </div>
             </div>
-
             <div className="carousel-item">
               <div className="row align-items-center g-0" style={{ backgroundColor: '#ff851b', minHeight: '550px' }}>
                 <div className="col-md-6 text-center p-4">
@@ -112,7 +114,6 @@ function App() {
                 </div>
               </div>
             </div>
-
             <div className="carousel-item">
               <div className="position-relative" style={{ height: '550px', backgroundImage: `url("http://localhost:8080/images/ui/habitacion.jpg")`, backgroundSize: '110%', backgroundPosition: 'bottom center', overflow: 'hidden' }}>
                 <div className="position-absolute w-100 h-100" style={{ background: 'linear-gradient(to left, rgba(0,0,0,0.5) 0%, transparent 70%)', zIndex: 1 }}></div>
@@ -132,7 +133,6 @@ function App() {
               </div>
             </div>
           </div>
-
           <button className="carousel-control-prev" type="button" data-bs-target="#carouselZonaRefri" data-bs-slide="prev"><span className="carousel-control-prev-icon"></span></button>
           <button className="carousel-control-next" type="button" data-bs-target="#carouselZonaRefri" data-bs-slide="next"><span className="carousel-control-next-icon"></span></button>
         </div>
@@ -146,12 +146,10 @@ function App() {
           {productos.map(p => (
             <div key={p.id} className="col-sm-6 col-md-4 col-lg-3">
               <div className="card h-100 shadow-sm">
-                <img src={p.imagenUrl && p.imagenUrl.startsWith('http') ? p.imagenUrl : `http://localhost:8080${p.imagenUrl}`} className="card-img-top" alt={p.nombre} style={{ objectFit: 'contain', height: '180px', padding: '10px' }} />
+                <img src={p.imagenUrl} className="card-img-top" alt={p.nombre} style={{ objectFit: 'contain', height: '180px', padding: '10px' }} />
                 <div className="card-body d-flex flex-column">
                   <h5 className="card-title" style={{ fontSize: '1.1rem' }}>{p.nombre}</h5>
                   <p className="card-text text-truncate" style={{ flex: '1' }}>{p.descripcion}</p>
-                  
-                  {/* DIFERENCIACIÓN DE ROL EN LA TARJETA */}
                   <div className="d-flex justify-content-between align-items-center mt-2">
                     <div className="fw-bold" style={{ color: '#007bff' }}>${p.precio}</div>
                     {usuario.rol === 'ADMIN' ? (
@@ -160,7 +158,6 @@ function App() {
                       <button className="btn btn-primary btn-sm">Comprar</button>
                     )}
                   </div>
-
                 </div>
               </div>
             </div>

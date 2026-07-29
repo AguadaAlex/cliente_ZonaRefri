@@ -11,8 +11,8 @@ public class CorsConfig implements WebMvcConfigurer {
     // 1. Permite la comunicación con el Frontend de Vite
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") // Cambiado de /api/** a /** para cubrir todo
-                .allowedOrigins("http://localhost:5173")
+        registry.addMapping("/**") 
+                .allowedOrigins("http://localhost:5174") // Corregido al puerto actual de tu Frontend
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*");
     }
