@@ -1,36 +1,54 @@
 import { useState } from 'react';
 
 const FormularioProducto = ({ onClose }) => {
-    // Definimos el estado alineado exactamente con los campos del Backend
+    // Estado alineado con los datos del formulario
     const [producto, setProducto] = useState({
         nombre: '',
         precio: '',
         descripcion: '',
         stock: 0,
-        categoria: 'Repuestos', // Valor por defecto
-        imagenUrl: '',
+        categoria: 'Repuestos',
         especificacionesTecnicas: ''
     });
 
+    // Estado específico para almacenar el archivo de la imagen seleccionada
+    const [imagenFile, setImagenFile] = useState(null);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
         try {
+            // Creamos un FormData para enviar texto y archivos binarios juntos
+            const formData = new FormData();
+            formData.append("nombre", producto.nombre);
+            formData.append("precio", producto.precio);
+            formData.append("descripcion", producto.descripcion);
+            formData.append("stock", producto.stock);
+            formData.append("categoria", producto.categoria);
+            formData.append("especificacionesTecnicas", producto.especificacionesTecnicas);
+            
+            // Si el usuario seleccionó un archivo de imagen, lo agregamos
+            if (imagenFile) {
+                formData.append("imagen", imagenFile);
+            }
+
             const respuesta = await fetch("http://localhost:8080/api/productos", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(producto)
+                // Nota: No se define el Header "Content-Type" cuando se usa FormData, 
+                // el navegador lo configura automáticamente con su respectivo boundary.
+                body: formData
             });
 
             if (respuesta.ok) {
-                alert("¡Producto cargado correctamente!");
-                if (onClose) onClose(); // Cierra el modal si existe la función
+                alert("¡Producto e imagen cargados correctamente!");
+                if (onClose) onClose(); // Cierra el modal si existe
                 window.location.reload(); // Refresca para ver el cambio
             } else {
-                alert("Error al guardar. Revisa la consola.");
+                alert("Error al guardar. Revisa la consola del servidor.");
             }
         } catch (error) {
             console.error("Error de conexión:", error);
-            alert("No se pudo conectar con el servidor.");
+            alert("No se pudo conectar con el servidor de Java.");
         }
     };
 
@@ -73,12 +91,16 @@ const FormularioProducto = ({ onClose }) => {
                 onChange={e => setProducto({...producto, stock: parseInt(e.target.value) || 0})} 
             />
 
-            <input 
-                className="form-control" 
-                placeholder="URL de la imagen (Cloudinary)" 
-                value={producto.imagenUrl}
-                onChange={e => setProducto({...producto, imagenUrl: e.target.value})} 
-            />
+            {/* Selector de archivos real para la imagen de Cloudinary */}
+            <div className="mb-2">
+                <label className="form-label text-muted small mb-1">Imagen del producto</label>
+                <input 
+                    className="form-control" 
+                    type="file" 
+                    accept="image/*"
+                    onChange={e => setImagenFile(e.target.files[0])} 
+                />
+            </div>
 
             <textarea 
                 className="form-control" 
