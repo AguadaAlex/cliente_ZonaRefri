@@ -36,6 +36,12 @@ public class ProductoController {
         return productoService.buscarPorCategoria(nombre);
     }
 
+    // Nuevo endpoint para manejar las peticiones de búsqueda desde la barra
+    @GetMapping("/buscar")
+    public List<Producto> buscarProductos(@RequestParam("nombre") String nombre) {
+        return productoService.buscarPorNombre(nombre);
+    }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Producto> crearProducto(
             @RequestParam("nombre") String nombre,
@@ -48,13 +54,11 @@ public class ProductoController {
         String urlImagen = null;
         
         try {
-            // Si el usuario adjuntó una imagen, la subimos a Cloudinary
             if (imagenFile != null && !imagenFile.isEmpty()) {
                 Map uploadResult = cloudinaryService.upload(imagenFile);
                 urlImagen = uploadResult.get("url").toString();
             }
 
-            // Creamos el producto y le asignamos los valores recibidos
             Producto producto = new Producto();
             producto.setNombre(nombre);
             producto.setDescripcion(descripcion);

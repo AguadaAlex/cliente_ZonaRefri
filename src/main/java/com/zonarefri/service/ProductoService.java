@@ -22,6 +22,11 @@ public class ProductoService {
         return productoRepository.findByCategoria(categoria);
     }
 
+    // Nuevo método para buscar por nombre
+    public List<Producto> buscarPorNombre(String nombre) {
+        return productoRepository.findByNombreContainingIgnoreCase(nombre);
+    }
+
     public Producto buscarPorId(Long id) {
         return productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
@@ -49,4 +54,4 @@ public class ProductoService {
         }
         productoRepository.deleteById(id);
     }
-}  
+}

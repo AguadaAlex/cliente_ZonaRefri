@@ -1,26 +1,45 @@
 import React, { useState, useEffect } from 'react'
 import logoRobot from './assets/logo-refri.jpeg'
 import Registro from './components/Registro' 
-import FormularioProducto from './components/FormularioProducto' // Importado
+import FormularioProducto from './components/FormularioProducto'
 
 function App() {
   const [productos, setProductos] = useState([]);
   const [errorProductos, setErrorProductos] = useState(null);
   const [usuario, setUsuario] = useState({ rol: 'CLIENTE' }); 
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [terminoBusqueda, setTerminoBusqueda] = useState(''); // Estado para la búsqueda
 
+  // Cargar todos los productos al iniciar
   useEffect(() => {
-    fetch('http://localhost:8080/api/productos')
+    cargarProductos('http://localhost:8080/api/productos');
+  }, []);
+
+  const cargarProductos = (url) => {
+    fetch(url)
       .then(resp => {
         if (!resp.ok) throw new Error('Error al obtener productos');
         return resp.json();
       })
-      .then(data => setProductos(data))
+      .then(data => {
+        setProductos(data);
+        setErrorProductos(null);
+      })
       .catch(err => {
         console.error('Fetch productos:', err);
         setErrorProductos(err.message);
       });
-  }, []);
+  };
+
+  // Función que maneja la búsqueda al hacer clic en la lupa o presionar Enter
+  const handleBuscar = (e) => {
+    e.preventDefault();
+    if (!terminoBusqueda.trim()) {
+      cargarProductos('http://localhost:8080/api/productos');
+      return;
+    }
+    cargarProductos(`http://localhost:8080/api/productos/buscar?nombre=${encodeURIComponent(terminoBusqueda)}`);
+  };
 
   return (
     <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', fontFamily: "'Sora', sans-serif", overflowX: 'hidden' }}>
@@ -39,12 +58,20 @@ function App() {
             </div>
             
             <div className="col">
-              <div className="input-group shadow-sm" style={{ borderRadius: '15px', overflow: 'hidden', maxWidth: '750px', margin: '0 auto' }}>
-                <input type="text" className="form-control border-0 py-3 px-4" placeholder="¿Qué repuesto estás buscando hoy?" style={{ fontSize: '1.1rem' }} />
-                <button className="btn btn-primary px-4 border-0" style={{ backgroundColor: '#007bff' }}>
+              {/* Convertido en form para capturar el submit de la lupa */}
+              <form onSubmit={handleBuscar} className="input-group shadow-sm" style={{ borderRadius: '15px', overflow: 'hidden', maxWidth: '750px', margin: '0 auto' }}>
+                <input 
+                  type="text" 
+                  className="form-control border-0 py-3 px-4" 
+                  placeholder="¿Qué repuesto estás buscando hoy?" 
+                  style={{ fontSize: '1.1rem' }} 
+                  value={terminoBusqueda}
+                  onChange={(e) => setTerminoBusqueda(e.target.value)}
+                />
+                <button type="submit" className="btn btn-primary px-4 border-0" style={{ backgroundColor: '#007bff' }}>
                     <span style={{ fontSize: '1.4rem' }}>🔍</span>
                 </button>
-              </div>
+              </form>
             </div>
             <div className="col-auto text-white text-end">
               <h1 className="m-0" style={{ fontSize: '1.8rem', fontWeight: '800', letterSpacing: '-1px', lineHeight: '1' }}>Zona Refri</h1>
@@ -52,12 +79,12 @@ function App() {
             </div>
           </div>
           <nav className="d-flex gap-4 mt-4 text-white fw-bold px-md-5" style={{ fontSize: '1rem', opacity: '0.9' }}>
-            <span style={{cursor:'pointer'}}>Heladeras</span>
-            <span style={{cursor:'pointer'}}>Lavarropas</span>
-            <span style={{cursor:'pointer'}}>Microondas</span>
-            <span style={{cursor:'pointer'}}>Aires</span>
-            <span style={{cursor:'pointer'}}>Repuestos</span>
-            <span style={{cursor:'pointer'}}>Servicio Técnico</span>
+            <span style={{cursor:'pointer'}} onClick={() => cargarProductos('http://localhost:8080/api/productos')}>Todos</span>
+            <span style={{cursor:'pointer'}} onClick={() => cargarProductos('http://localhost:8080/api/productos/categoria/Heladeras')}>Heladeras</span>
+            <span style={{cursor:'pointer'}} onClick={() => cargarProductos('http://localhost:8080/api/productos/categoria/Lavarropas')}>Lavarropas</span>
+            <span style={{cursor:'pointer'}} onClick={() => cargarProductos('http://localhost:8080/api/productos/categoria/Microondas')}>Microondas</span>
+            <span style={{cursor:'pointer'}} onClick={() => cargarProductos('http://localhost:8080/api/productos/categoria/Aires')}>Aires</span>
+            <span style={{cursor:'pointer'}} onClick={() => cargarProductos('http://localhost:8080/api/productos/categoria/Repuestos')}>Repuestos</span>
           </nav>
         </div>
       </header>
