@@ -31,7 +31,7 @@ function App() {
       });
   };
 
-  // Función que maneja la búsqueda al hacer clic en la lupa o presionar Enter
+  // Función que maneja la búsqueda, filtra y baja automáticamente al catálogo
   const handleBuscar = (e) => {
     e.preventDefault();
     if (!terminoBusqueda.trim()) {
@@ -39,6 +39,12 @@ function App() {
       return;
     }
     cargarProductos(`http://localhost:8080/api/productos/buscar?nombre=${encodeURIComponent(terminoBusqueda)}`);
+    
+    // Desplazamiento automático suave hacia la sección del catálogo
+    const seccionCatalogo = document.getElementById('catalogo-productos');
+    if (seccionCatalogo) {
+      seccionCatalogo.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
@@ -58,7 +64,6 @@ function App() {
             </div>
             
             <div className="col">
-              {/* Convertido en form para capturar el submit de la lupa */}
               <form onSubmit={handleBuscar} className="input-group shadow-sm" style={{ borderRadius: '15px', overflow: 'hidden', maxWidth: '750px', margin: '0 auto' }}>
                 <input 
                   type="text" 
@@ -165,8 +170,8 @@ function App() {
         </div>
       </section>
 
-      {/* SECTION DE PRODUCTOS OBTENIDOS DEL BACKEND */}
-      <section className="container my-5">
+      {/* SECCIÓN DE PRODUCTOS OBTENIDOS DEL BACKEND (Con ID para el scroll automático) */}
+      <section id="catalogo-productos" className="container my-5">
         <h2 className="mb-4 text-center" style={{ color: '#00509d' }}>Catálogo de Productos</h2>
         {errorProductos && <div className="alert alert-danger">No se pudieron cargar los productos: {errorProductos}</div>}
         <div className="row g-4">
