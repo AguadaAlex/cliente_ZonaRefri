@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -15,22 +13,12 @@ import java.util.Map;
 public class CloudinaryService {
 
     @Autowired
-    private Cloudinary cloudinary; // Aquí es donde Spring inyecta tu "Bean"
+    private Cloudinary cloudinary;
 
-    public Map upload(MultipartFile multipartFile) throws IOException {
-        File file = convert(multipartFile);
-        // Enviamos el archivo a la nube
-        Map result = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
-        file.delete(); // Importante: borra el archivo temporal de tu servidor
+    // Cambiamos 'Map' por 'Map<String, Object>' o 'Map<?, ?>'
+    public Map<String, Object> upload(MultipartFile multipartFile) throws IOException {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> result = cloudinary.uploader().upload(multipartFile.getBytes(), ObjectUtils.emptyMap());
         return result;
-    }
-
-    // Método auxiliar para convertir el archivo que viene del frontend
-    private File convert(MultipartFile multipartFile) throws IOException {
-        File file = new File(multipartFile.getOriginalFilename());
-        FileOutputStream fo = new FileOutputStream(file);
-        fo.write(multipartFile.getBytes());
-        fo.close();
-        return file;
     }
 }

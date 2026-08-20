@@ -17,7 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/productos")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:5174"})
+@CrossOrigin(origins = "*")
 public class ProductoController {
 
     @Autowired
@@ -36,7 +36,6 @@ public class ProductoController {
         return productoService.buscarPorCategoria(nombre);
     }
 
-    // Nuevo endpoint para manejar las peticiones de búsqueda desde la barra
     @GetMapping("/buscar")
     public List<Producto> buscarProductos(@RequestParam("nombre") String nombre) {
         return productoService.buscarPorNombre(nombre);
@@ -55,8 +54,11 @@ public class ProductoController {
         
         try {
             if (imagenFile != null && !imagenFile.isEmpty()) {
-                Map uploadResult = cloudinaryService.upload(imagenFile);
-                urlImagen = uploadResult.get("url").toString();
+                Map<String, Object> uploadResult = cloudinaryService.upload(imagenFile);
+                
+                if (uploadResult != null && uploadResult.containsKey("secure_url")) {
+                    urlImagen = uploadResult.get("secure_url").toString();
+                }
             }
 
             Producto producto = new Producto();
