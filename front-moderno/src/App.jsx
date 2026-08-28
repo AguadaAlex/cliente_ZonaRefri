@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, NavLink } from 'react-router-dom';
 import logoRobot from './assets/logo-refri.jpeg';
 
@@ -12,6 +12,26 @@ import Contacto from './pages/Contacto';
 function App() {
   const [terminoBusqueda, setTerminoBusqueda] = useState('');
   const [usuario, setUsuario] = useState({ rol: 'CLIENTE' });
+
+  // Estados para almacenar el catálogo que viene de Spring Boot
+  const [productos, setProductos] = useState([]);
+  const [errorProductos, setErrorProductos] = useState(null);
+
+  // Consulta al backend para traer los productos y las imágenes de Cloudinary
+  useEffect(() => {
+    fetch('http://localhost:8080/api/productos')
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Error al conectar con el servidor');
+        }
+        return res.json();
+      })
+      .then((data) => setProductos(data))
+      .catch((err) => {
+        console.error("No se pudieron cargar los productos:", err);
+        setErrorProductos(err.message);
+      });
+  }, []);
 
   const handleBuscar = (e) => {
     e.preventDefault();
@@ -85,7 +105,16 @@ function App() {
       <main>
         <Routes>
           <Route path="/" element={<Inicio usuario={usuario} />} />
-          <Route path="/productos" element={<Productos usuario={usuario} />} />
+          <Route 
+            path="/productos" 
+            element={
+              <Productos 
+                productos={productos} 
+                errorProductos={errorProductos} 
+                usuario={usuario} 
+              />
+            } 
+          />
           <Route path="/servicios" element={<Servicios />} />
           <Route path="/empresa" element={<Empresa />} />
           <Route path="/contacto" element={<Contacto />} />
